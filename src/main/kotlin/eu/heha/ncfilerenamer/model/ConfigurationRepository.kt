@@ -1,3 +1,5 @@
+package eu.heha.ncfilerenamer.model
+
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,16 +14,20 @@ object ConfigurationRepository {
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun load(): Configuration = withContext(Dispatchers.IO) {
-        File("config.json").also { Napier.e("path: $it") }.inputStream().use {
+        File("data","config.json").also { Napier.e("path: $it") }.inputStream().use {
             Json.decodeFromStream<Configuration>(it)
         }
     }
 
     @Suppress("unused")
     @OptIn(ExperimentalSerializationApi::class)
-    suspend fun save(configuration: Configuration) = withContext(Dispatchers.IO) {
-        File("config.json").also { Napier.e("path: $it") }.outputStream().use {
-            Json.encodeToStream(configuration, it)
+    suspend fun save(
+        user: String, password: String, baseUrl: String
+    ) = withContext(Dispatchers.IO) {
+        val directory = File("data")
+        directory.mkdirs()
+        directory.resolve("config.json").outputStream().use { outputStream ->
+            Json.encodeToStream(Configuration(user, password, baseUrl), outputStream)
         }
     }
 

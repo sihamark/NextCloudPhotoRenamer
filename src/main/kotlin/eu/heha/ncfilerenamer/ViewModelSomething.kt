@@ -1,4 +1,7 @@
+package eu.heha.ncfilerenamer
+
 import com.github.sardine.SardineFactory
+import eu.heha.ncfilerenamer.model.ConfigurationRepository
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
