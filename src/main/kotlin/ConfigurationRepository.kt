@@ -17,6 +17,7 @@ object ConfigurationRepository {
         }
     }
 
+    @Suppress("unused")
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun save(configuration: Configuration) = withContext(Dispatchers.IO) {
         File("config.json").also { Napier.e("path: $it") }.outputStream().use {
