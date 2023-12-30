@@ -13,9 +13,14 @@ import java.io.File
 object ConfigurationRepository {
 
     @OptIn(ExperimentalSerializationApi::class)
-    suspend fun load(): Configuration = withContext(Dispatchers.IO) {
-        File("data","config.json").also { Napier.e("path: $it") }.inputStream().use {
-            Json.decodeFromStream<Configuration>(it)
+    suspend fun load(): Configuration? = withContext(Dispatchers.IO) {
+        try {
+            File("data", "config.json").inputStream().use { inputStream ->
+                Json.decodeFromStream<Configuration>(inputStream)
+            }
+        } catch (e: Exception) {
+            Napier.e("Error loading configuration", e)
+            null
         }
     }
 

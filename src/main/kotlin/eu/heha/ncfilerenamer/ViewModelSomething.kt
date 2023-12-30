@@ -13,7 +13,7 @@ class ViewModelSomething : CoroutineScope by MainScope() {
     fun something() {
         launch(Dispatchers.IO) {
             try {
-                val config = ConfigurationRepository.load()
+                val config = ConfigurationRepository.load() ?: return@launch
                 Napier.e { "trying to connect" }
                 val sardine = SardineFactory.begin(config.userName, config.password)
                 val resources =
