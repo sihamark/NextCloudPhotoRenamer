@@ -65,6 +65,7 @@ fun MainScreen(
 private fun ResourceItem(resource: FileController.Resource, onClick: () -> Unit) {
     Surface(
         shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.surfaceTint,
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
