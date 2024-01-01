@@ -38,7 +38,7 @@ object ConfigurationRepository {
 
     @Serializable
     data class Configuration(
-        val userName: String,
+        val user: String,
         val password: String,
         val baseUrl: String
     )

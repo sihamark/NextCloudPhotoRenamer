@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "eu.foundation.heha"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -21,6 +21,7 @@ dependencies {
     // (in a separate module for demo project and in testMain).
     // With compose.desktop.common you will also lose @Preview functionality
     implementation(compose.desktop.currentOs)
+    implementation(compose.material3)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.3")
     implementation("com.github.lookfirst:sardine:5.12")
     implementation("io.github.aakira:napier:2.7.0")

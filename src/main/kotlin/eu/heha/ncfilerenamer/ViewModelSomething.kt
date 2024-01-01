@@ -12,12 +12,22 @@ import kotlinx.coroutines.launch
 class ViewModelSomething : CoroutineScope by MainScope() {
     fun something() {
         launch(Dispatchers.IO) {
+            fundasda()
+        }
+    }
+
+    fun close() {
+        cancel()
+    }
+
+    companion object {
+        suspend fun fundasda() {
             try {
-                val config = ConfigurationRepository.load() ?: return@launch
+                val config = ConfigurationRepository.load() ?: return
                 Napier.e { "trying to connect" }
-                val sardine = SardineFactory.begin(config.userName, config.password)
+                val sardine = SardineFactory.begin(config.user, config.password)
                 val resources =
-                    sardine.list("${config.baseUrl}/remote.php/dav/files/${config.userName}/Photos")
+                    sardine.list("${config.baseUrl}/remote.php/dav/files/${config.user}/Photos")
                 Napier.e { "found ${resources.size} resources" }
                 val resource = resources.first { !it.isDirectory }
                 Napier.e { "found resource: ${resource.href}" }
@@ -28,20 +38,16 @@ class ViewModelSomething : CoroutineScope by MainScope() {
                     val newHref = (pathSegments.dropLast(1) + newFileName).joinToString("/")
                     Napier.e { "renaming $fileName to $newFileName, new href: $newHref" }
                     Napier.e { "      resource: $newHref" }
-                    sardine.move(
-                        config.baseUrl + resource.href,
-                        config.baseUrl + newHref
-                    )
+//                    sardine.move(
+//                        config.baseUrl + resource.href,
+//                        config.baseUrl + newHref
+//                    )
                 }
 
-//                sardine.move(config.baseUrl + resource.href)
+                //                sardine.move(config.baseUrl + resource.href)
             } catch (e: Exception) {
                 Napier.e("something went wrong", e)
             }
         }
-    }
-
-    fun close() {
-        cancel()
     }
 }
