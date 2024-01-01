@@ -5,7 +5,6 @@ import com.github.sardine.SardineFactory
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
-import java.net.URI
 
 class FileController {
 
@@ -18,7 +17,7 @@ class FileController {
                 val config = ConfigurationRepository.load()
                     ?: error("configuration not present")
                 configuration = config
-                _sardine = SardineFactory.begin(config.password, config.password)
+                _sardine = SardineFactory.begin(config.user, config.password)
             }
         }
         return _sardine
@@ -26,30 +25,24 @@ class FileController {
 
     suspend fun rootRef(): String {
         sardine()
-        return "files/${configuration.user}"
+        return "remote.php/dav/files/${configuration.user}/"
     }
 
-    suspend fun loadFileContent(ref: URI? = null): List<Resource> = withContext(IO) {
-        val uri = uri(ref)
+    suspend fun loadFileContent(ref: String): List<Resource> = withContext(IO) {
+        val uri = "${configuration.baseUrl}$ref"
         Napier.e { "Loading from $uri" }
         sardine().list(uri)
             .filter {
-                it.href != ref
+                it.href.toString() != ref
             }
             .map { davResource ->
                 Resource(
                     ref = davResource.href.toString(),
                     name = davResource.name,
                     isDirectory = davResource.isDirectory,
-                    isRoot = ref == null
+                    isRoot = ref == rootRef()
                 )
             }
-    }
-
-    private fun uri(ref: URI?): String = if (ref == null) {
-        "${configuration.baseUrl}remote.php/dav/files/${configuration.user}"
-    } else {
-        "${configuration.baseUrl}remote.php/dav/files/${configuration.user}/$ref"
     }
 
     data class Resource(

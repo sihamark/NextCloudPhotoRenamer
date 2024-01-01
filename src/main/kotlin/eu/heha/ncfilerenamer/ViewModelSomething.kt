@@ -24,10 +24,11 @@ class ViewModelSomething : CoroutineScope by MainScope() {
         suspend fun fundasda() {
             try {
                 val config = ConfigurationRepository.load() ?: return
-                Napier.e { "trying to connect" }
+                val url = "${config.baseUrl}/remote.php/dav/files/${config.user}/Photos"
+                Napier.e { "trying to connect to $url" }
                 val sardine = SardineFactory.begin(config.user, config.password)
                 val resources =
-                    sardine.list("${config.baseUrl}/remote.php/dav/files/${config.user}/Photos")
+                    sardine.list(url)
                 Napier.e { "found ${resources.size} resources" }
                 val resource = resources.first { !it.isDirectory }
                 Napier.e { "found resource: ${resource.href}" }

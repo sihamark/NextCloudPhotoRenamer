@@ -10,5 +10,8 @@ fun MainRoute() {
     LaunchedEffect(viewModel) {
         viewModel.loadRoot()
     }
-    MainScreen(viewModel.fileState)
+    MainScreen(
+        fileState = viewModel.fileState,
+        onClickResource = { resource -> viewModel.load(resource) }
+    )
 }

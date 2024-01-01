@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +24,10 @@ import eu.heha.ncfilerenamer.model.FileController
 import eu.heha.ncfilerenamer.ui.theme.AppTheme
 
 @Composable
-fun MainScreen(fileState: MainViewModel.FileState?) {
+fun MainScreen(
+    fileState: MainViewModel.FileState?,
+    onClickResource: (FileController.Resource) -> Unit
+) {
     Scaffold { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
             when (fileState) {
@@ -40,7 +44,10 @@ fun MainScreen(fileState: MainViewModel.FileState?) {
                         Header(fileState.ref)
                     }
                     items(fileState.files) { resource ->
-                        ResourceItem(resource)
+                        ResourceItem(
+                            resource = resource,
+                            onClick = { onClickResource(resource) }
+                        )
                     }
                 }
 
@@ -51,23 +58,31 @@ fun MainScreen(fileState: MainViewModel.FileState?) {
 }
 
 @Composable
-private fun ResourceItem(resource: FileController.Resource) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+private fun ResourceItem(resource: FileController.Resource, onClick: () -> Unit) {
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
-        Text(
-            resource.name,
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(16.dp)
-        )
-        Text(
-            if (resource.isDirectory) "Directory" else "File",
-            style = MaterialTheme.typography.bodySmall,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(16.dp)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                resource.name,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(16.dp)
+            )
+            Text(
+                if (resource.isDirectory) "Directory" else "File",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
     }
 }
 
@@ -126,6 +141,8 @@ private fun LoadingItem(ref: String) {
 @Composable
 private fun MainScreenPreview() {
     AppTheme {
-        MainScreen(MainViewModel.FileState.Files("root", emptyList()))
+        MainScreen(
+            fileState = MainViewModel.FileState.Files("root", emptyList()),
+            onClickResource = {})
     }
 }
