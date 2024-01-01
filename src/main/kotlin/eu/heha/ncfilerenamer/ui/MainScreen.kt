@@ -29,7 +29,11 @@ fun MainScreen(
     onClickResource: (FileController.Resource) -> Unit
 ) {
     Scaffold { innerPadding ->
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
             when (fileState) {
                 is MainViewModel.FileState.Loading -> item {
                     LoadingItem(fileState.ref)
@@ -126,7 +130,9 @@ private fun LoadingItem(ref: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
         CircularProgressIndicator()
         Text(
@@ -143,6 +149,7 @@ private fun MainScreenPreview() {
     AppTheme {
         MainScreen(
             fileState = MainViewModel.FileState.Files("root", emptyList()),
-            onClickResource = {})
+            onClickResource = {}
+        )
     }
 }
