@@ -5,6 +5,7 @@ import com.github.sardine.SardineFactory
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
+import java.net.URLDecoder
 
 class FileController {
 
@@ -38,7 +39,7 @@ class FileController {
             .map { davResource ->
                 Resource(
                     ref = davResource.href.toString(),
-                    name = davResource.name,
+                    name = URLDecoder.decode(davResource.name, Charsets.UTF_8),
                     isDirectory = davResource.isDirectory,
                     isRoot = ref == rootRef()
                 )
