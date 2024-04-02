@@ -26,7 +26,7 @@ class FileController {
 
     suspend fun rootRef(): String {
         sardine()
-        return "remote.php/dav/files/${configuration.user}/"
+        return "/remote.php/dav/files/${configuration.user}/"
     }
 
     suspend fun loadFileContent(ref: String): List<Resource> = withContext(IO) {
