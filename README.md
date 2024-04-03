@@ -12,7 +12,7 @@ photo was taken.
     - analyse how the author might change when renaming file with this bot
     - analyse file templates for every used format
     - decide on a target template
-    - implement ui to select file for template (what file is allegible for what template)
+  - implement ui to select file for template (what file is eligible for what template)
     - add progress for renaming function
     - add function for view images
     - add function to move pictures to a new folder
