@@ -14,6 +14,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilePresent
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
@@ -96,7 +98,9 @@ fun MainScreen(
 private fun ResourceItem(resource: Resource, onClick: () -> Unit) {
     Surface(
         shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surfaceTint,
+        color = with(MaterialTheme.colorScheme) {
+            if (resource.isDirectory) primaryContainer else secondaryContainer
+        },
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
@@ -106,16 +110,14 @@ private fun ResourceItem(resource: Resource, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                resource.name,
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
+            Icon(
+                imageVector = if (resource.isDirectory) Icons.Default.Folder else Icons.Default.FilePresent,
+                contentDescription = if (resource.isDirectory) "Folder" else "File",
                 modifier = Modifier.padding(16.dp)
             )
             Text(
-                if (resource.isDirectory) "Directory" else "File",
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
+                resource.name,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(16.dp)
             )
         }

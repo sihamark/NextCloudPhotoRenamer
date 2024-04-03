@@ -20,6 +20,7 @@ kotlin {
 //            implementation(project(":shared"))
             implementation(compose.desktop.currentOs)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.sardine)
             implementation(libs.napier)
