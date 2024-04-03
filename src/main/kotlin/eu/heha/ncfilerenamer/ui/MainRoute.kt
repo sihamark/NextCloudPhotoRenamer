@@ -14,6 +14,6 @@ fun MainRoute() {
         fileState = viewModel.fileState,
         onClickResource = viewModel::load,
         onClickReload = viewModel::reload,
-        onClickNavigateBack = viewModel::navigateUp
+        onClickNavigateUp = viewModel::navigateUp
     )
 }

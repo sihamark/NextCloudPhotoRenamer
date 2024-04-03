@@ -14,7 +14,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +36,7 @@ fun MainScreen(
     fileState: FileState?,
     onClickResource: (Resource) -> Unit,
     onClickReload: () -> Unit,
-    onClickNavigateBack: () -> Unit
+    onClickNavigateUp: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -45,10 +45,10 @@ fun MainScreen(
                 actions = {
                     if (fileState != null && fileState !is FileState.Loading) {
                         if (fileState is FileState.Files && !fileState.content.resource.isRoot) {
-                            IconButton(onClick = onClickNavigateBack) {
+                            IconButton(onClick = onClickNavigateUp) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                    contentDescription = "Navigate Back"
+                                    imageVector = Icons.Default.KeyboardArrowUp,
+                                    contentDescription = "Navigate Up"
                                 )
                             }
                         }
@@ -178,7 +178,7 @@ private fun FilesPreview() {
         FileState.Files(
             "root",
             FileController.ResourceContent(
-                Resource("root", "root", isDirectory = true, isRoot = true),
+                Resource("root", "root", isDirectory = true, isRoot = false),
                 listOf(
                     Resource("root/file1", "file1", false),
                     Resource("root/file2", "file2", false),
@@ -197,7 +197,7 @@ private fun BasePreview(fileState: FileState) {
             fileState = fileState,
             onClickResource = {},
             onClickReload = {},
-            onClickNavigateBack = {}
+            onClickNavigateUp = {}
         )
     }
 }
