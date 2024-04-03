@@ -7,6 +7,7 @@ import eu.heha.ncfilerenamer.ViewModel
 import eu.heha.ncfilerenamer.model.FileController
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
+import java.net.URI
 
 class MainViewModel : ViewModel() {
 
@@ -42,12 +43,29 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun reload() {
+        val ref = fileState?.ref ?: return
+        load(ref)
+    }
+
+    fun navigateUp() {
+        val ref = fileState?.ref ?: return
+        val parent = URI(ref).resolve("..").toString()
+        load(parent)
+    }
+
     sealed interface FileState {
         val ref: String
 
         data class Loading(override val ref: String) : FileState
-        data class Error(override val ref: String, val message: String) : FileState
-        data class Files(override val ref: String, val files: List<FileController.Resource>) :
-            FileState
+        data class Error(
+            override val ref: String,
+            val message: String
+        ) : FileState
+
+        data class Files(
+            override val ref: String,
+            val content: FileController.ResourceContent
+        ) : FileState
     }
 }

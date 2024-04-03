@@ -1,5 +1,6 @@
 package eu.heha.ncfilerenamer.model
 
+import com.github.sardine.DavResource
 import com.github.sardine.Sardine
 import com.github.sardine.SardineFactory
 import io.github.aakira.napier.Napier
@@ -29,22 +30,33 @@ class FileController {
         return "/remote.php/dav/files/${configuration.user}/"
     }
 
-    suspend fun loadFileContent(ref: String): List<Resource> = withContext(IO) {
+    suspend fun loadFileContent(ref: String): ResourceContent = withContext(IO) {
         val uri = "${configuration.baseUrl}$ref"
         Napier.e { "Loading from $uri" }
-        sardine().list(uri)
-            .filter {
-                it.href.toString() != ref
-            }
-            .map { davResource ->
-                Resource(
-                    ref = davResource.href.toString(),
-                    name = URLDecoder.decode(davResource.name, Charsets.UTF_8),
-                    isDirectory = davResource.isDirectory,
-                    isRoot = ref == rootRef()
-                )
-            }
+
+        val resources = sardine().list(uri)
+        val refResource = resources.first { it.href.toString() == ref }
+        val content = (resources - refResource).map { davResource -> davResource.toResource() }
+        ResourceContent(
+            resource = refResource.toResource(),
+            content = content
+        )
     }
+
+    private suspend fun DavResource.toResource(): Resource {
+        val ref = href.toString()
+        return Resource(
+            ref = ref,
+            name = URLDecoder.decode(name, Charsets.UTF_8),
+            isDirectory = isDirectory,
+            isRoot = ref == rootRef()
+        )
+    }
+
+    data class ResourceContent(
+        val resource: Resource,
+        val content: List<Resource>
+    )
 
     data class Resource(
         val ref: String,

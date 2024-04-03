@@ -2,7 +2,6 @@ package eu.heha.ncfilerenamer.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -21,33 +27,58 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import eu.heha.ncfilerenamer.model.FileController
+import eu.heha.ncfilerenamer.model.FileController.Resource
+import eu.heha.ncfilerenamer.ui.MainViewModel.FileState
 import eu.heha.ncfilerenamer.ui.theme.AppTheme
 
 @Composable
 fun MainScreen(
-    fileState: MainViewModel.FileState?,
-    onClickResource: (FileController.Resource) -> Unit
+    fileState: FileState?,
+    onClickResource: (Resource) -> Unit,
+    onClickReload: () -> Unit,
+    onClickNavigateBack: () -> Unit
 ) {
-    Scaffold { innerPadding ->
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(fileState?.ref ?: "") },
+                actions = {
+                    if (fileState != null && fileState !is FileState.Loading) {
+                        if (fileState is FileState.Files && !fileState.content.resource.isRoot) {
+                            IconButton(onClick = onClickNavigateBack) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                    contentDescription = "Navigate Back"
+                                )
+                            }
+                        }
+                        IconButton(onClick = onClickReload) {
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = "Refresh"
+                            )
+                        }
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
             when (fileState) {
-                is MainViewModel.FileState.Loading -> item {
-                    LoadingItem(fileState.ref)
+                is FileState.Loading -> item {
+                    LoadingItem()
                 }
 
-                is MainViewModel.FileState.Error -> item {
-                    ErrorItem(fileState.ref, fileState.message)
+                is FileState.Error -> item {
+                    ErrorItem(fileState.ref, fileState.message, onClickReload)
                 }
 
-                is MainViewModel.FileState.Files -> {
-                    item {
-                        Header(fileState.ref)
-                    }
-                    items(fileState.files) { resource ->
+                is FileState.Files -> {
+                    items(fileState.content.content) { resource ->
                         ResourceItem(
                             resource = resource,
                             onClick = { onClickResource(resource) }
@@ -62,7 +93,7 @@ fun MainScreen(
 }
 
 @Composable
-private fun ResourceItem(resource: FileController.Resource, onClick: () -> Unit) {
+private fun ResourceItem(resource: Resource, onClick: () -> Unit) {
     Surface(
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surfaceTint,
@@ -92,29 +123,14 @@ private fun ResourceItem(resource: FileController.Resource, onClick: () -> Unit)
 }
 
 @Composable
-private fun Header(ref: String) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            ref,
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
-
-@Composable
-private fun ErrorItem(ref: String, message: String) {
+private fun ErrorItem(ref: String, message: String, onClickReload: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
         Text(
-            "Error loading $ref",
+            "Error loading '$ref'",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center
         )
@@ -123,11 +139,15 @@ private fun ErrorItem(ref: String, message: String) {
             style = MaterialTheme.typography.bodySmall,
             textAlign = TextAlign.Center
         )
+        Button(onClick = onClickReload) {
+            Icon(imageVector = Icons.Default.Refresh, contentDescription = "Retry")
+            Text("Retry")
+        }
     }
 }
 
 @Composable
-private fun LoadingItem(ref: String) {
+private fun LoadingItem() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -136,21 +156,48 @@ private fun LoadingItem(ref: String) {
             .padding(16.dp)
     ) {
         CircularProgressIndicator()
-        Text(
-            "Loading $ref",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center
-        )
     }
 }
 
 @Preview
 @Composable
-private fun MainScreenPreview() {
+private fun LoadingPreview() {
+    BasePreview(FileState.Loading("root"))
+}
+
+@Preview
+@Composable
+private fun ErrorPreview() {
+    BasePreview(FileState.Error("root", "Problem loading files"))
+}
+
+@Preview
+@Composable
+private fun FilesPreview() {
+    BasePreview(
+        FileState.Files(
+            "root",
+            FileController.ResourceContent(
+                Resource("root", "root", isDirectory = true, isRoot = true),
+                listOf(
+                    Resource("root/file1", "file1", false),
+                    Resource("root/file2", "file2", false),
+                    Resource("root/dir1", "dir1", true),
+                    Resource("root/dir2", "dir2", true)
+                )
+            )
+        )
+    )
+}
+
+@Composable
+private fun BasePreview(fileState: FileState) {
     AppTheme {
         MainScreen(
-            fileState = MainViewModel.FileState.Files("root", emptyList()),
-            onClickResource = {}
+            fileState = fileState,
+            onClickResource = {},
+            onClickReload = {},
+            onClickNavigateBack = {}
         )
     }
 }

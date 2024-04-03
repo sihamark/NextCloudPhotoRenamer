@@ -18,7 +18,6 @@ class AppViewModel : ViewModel() {
             } else {
                 Route.Login
             }
-
         }
     }
 

@@ -12,6 +12,8 @@ fun MainRoute() {
     }
     MainScreen(
         fileState = viewModel.fileState,
-        onClickResource = { resource -> viewModel.load(resource) }
+        onClickResource = viewModel::load,
+        onClickReload = viewModel::reload,
+        onClickNavigateBack = viewModel::navigateUp
     )
 }

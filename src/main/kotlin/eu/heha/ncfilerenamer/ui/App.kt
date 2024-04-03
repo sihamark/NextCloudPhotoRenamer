@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import eu.heha.ncfilerenamer.ui.AppViewModel.Route
 import eu.heha.ncfilerenamer.viewModel
 
 @Composable
@@ -21,8 +22,8 @@ fun App() {
         ) {
             AnimatedContent(model.route, contentAlignment = Alignment.Center) { route ->
                 when (route) {
-                    AppViewModel.Route.Login -> LoginRoute(onSuccess = { model.onLoginSuccess() })
-                    AppViewModel.Route.Main -> MainRoute()
+                    Route.Login -> LoginRoute(onSuccess = { model.onLoginSuccess() })
+                    Route.Main -> MainRoute()
                     else -> Unit
                 }
             }
