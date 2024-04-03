@@ -1,0 +1,22 @@
+[versions]
+kotlin = "1.9.23"
+
+compose-plugin = "1.6.1"
+
+kotlinx-coroutines = "1.8.0"
+kotlinx-serialization = "1.6.3"
+
+sardine = "5.12"
+napier = "2.7.1"
+
+[libraries]
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+sardine = { module = "com.github.lookfirst:sardine", version.ref = "sardine" }
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
